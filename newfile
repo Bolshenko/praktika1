@@ -1,0 +1,28 @@
+def add_minutes_to_time(time_str, minutes):
+  # разделяем время на часы и минуты
+  hours, mins = map(int, time_str.split(':'))
+  total_minutes = hours * 60 + mins + minutes
+  new_hours = (total_minutes // 60) % 24  # Обеспечиваем 24-часовой формат
+  new_mins = total_minutes % 60
+  return f"{new_hours:02}:{new_mins:02}"
+
+# чтение входных данных
+initial_time = input().strip()
+N = int(input().strip())
+travel_times = list(map(int, input().strip().split()))
+
+if len(travel_times) != N - 1:
+    raise ValueError(f"Количество временных интервалов должно быть {N - 1}, а не {len(travel_times)}.")
+
+# список хранения результатов
+result_times = [initial_time]
+
+# время отправления для каждой станции
+current_time = initial_time
+for travel_time in travel_times:
+  current_time = add_minutes_to_time(current_time, travel_time)
+  result_times.append(current_time)
+
+# вывод результата
+for time in result_times:
+  print(time)
