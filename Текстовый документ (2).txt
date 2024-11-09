@@ -1,0 +1,28 @@
+def is_symmetric(matrix, r1, c1, r2, c2):
+    # проверяем является ли подпрямоугольник с углами (r1, c1) и (r2, c2) симметричным относительно центра
+    rows = r2 - r1 + 1
+    cols = c2 - c1 + 1
+    for i in range(rows):
+        for j in range(cols):
+            if matrix[r1 + i][c1 + j] != matrix[r1 + (rows - 1 - i)][c1 + (cols - 1 - j)]:
+                return False
+    return True
+
+def count_sympathetic_parts(N, M, matrix):
+    count = 0
+    # перебираем все возможные подпрямоугольники
+    for r1 in range(N):
+        for c1 in range(M):
+            for r2 in range(r1, N):
+                for c2 in range(c1, M):
+                    if is_symmetric(matrix, r1, c1, r2, c2):
+                        count += 1
+    return count
+
+# вводим данные
+N, M = map(int, input().split())
+matrix = [input().strip() for _ in range(N)]
+
+# Подсчет симпатичных частей
+result = count_sympathetic_parts(N, M, matrix)
+print(result)
