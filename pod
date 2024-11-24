@@ -9,3 +9,21 @@ spec:
       env:
         - name: DISPLAY
           value: "host.docker.internal:0"
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-gui-app
+spec:
+  containers:
+  - name: my-container
+    image: my-graph-app
+    env:
+    - name: DISPLAY
+      value: "<IP_адрес_вашей_машины>:0"  # IP машины, где запущен X сервер
+    volumeMounts:
+    - mountPath: /tmp/.X11-unix
+      name: x11-socket
+  volumes:
+  - name: x11-socket
+    hostPath:
+      path: /tmp/.X11-unix
