@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: python-graph
+spec:
+  containers:
+    - name: python-container
+      image: your_image_name
+      env:
+        - name: DISPLAY
+          value: "host.docker.internal:0"
