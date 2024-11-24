@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-graph-app-pod
+spec:
+  containers:
+  - name: my-graph-app
+    image: my-graph-app:latest
+    volumeMounts:
+    - name: output-volume
+      mountPath: /output  # Путь внутри контейнера, где сохраняются графики
+  volumes:
+  - name: output-volume
+    hostPath:
+      path: /path/on/your/host  # Путь на хосте, где будут сохраняться файлы
