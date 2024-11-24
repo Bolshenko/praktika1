@@ -1,0 +1,17 @@
+FROM python:3.9-slim
+
+# Устанавливаем зависимости
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем ваш код в контейнер
+COPY your_script.py /app/your_script.py
+
+# Создаем директорию для сохранения графиков
+RUN mkdir -p /output
+
+# Указываем рабочую директорию
+WORKDIR /app
+
+# Запускаем ваше приложение
+CMD ["python", "your_script.py"]
