@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: graph-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: graph-container
+        image: your-image-name:latest  # Укажите свой образ
+        volumeMounts:
+        - name: img-volume
+          mountPath: /app/img  # Путь внутри контейнера, куда ваше приложение сохраняет график
+      volumes:
+      - name: img-volume
+        hostPath:
+          path: /path/on/host/img  # Путь на хосте, куда будут сохраняться графики
+          type: Directory  # Убедитесь, что этот путь существует и доступен
+      restartPolicy: OnFailure
