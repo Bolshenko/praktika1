@@ -1,0 +1,63 @@
+import numpy as np
+import time
+import sys
+from mpi4py import MPI  # Используем MPI для параллельных вычислений
+
+def generate_graph(n, max_weight=100):
+    """
+    Генерирует случайный граф в виде матрицы смежности.
+    """
+    np.random.seed(42)  # Для воспроизводимости
+    graph = np.random.randint(1, max_weight, size=(n, n))
+    np.fill_diagonal(graph, 0)
+    return graph
+
+def floyd_warshall_parallel(graph):
+    """
+    Реализация алгоритма Флойда-Уоршелла с использованием MPI.
+    """
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    n = len(graph)
+    dist = np.array(graph, dtype=np.int32)
+
+    for k in range(n):
+        # Рассылаем текущую строку k всем процессам
+        row_k = dist[k] if rank == 0 else np.empty(n, dtype=np.int32)
+        comm.Bcast(row_k, root=0)
+
+        # Каждый процесс обрабатывает свою часть строк
+        for i in range(rank, n, size):
+            for j in range(n):
+                dist[i][j] = min(dist[i][j], dist[i][k] + row_k[j])
+
+        # Собираем все строки обратно на корневом процессе
+        gathered_rows = comm.gather(dist[rank:n:size], root=0)
+
+        if rank == 0:
+            # Объединяем результаты
+            dist = np.vstack(gathered_rows)
+
+    return dist if rank == 0 else None
+
+
+if __name__ == "__main__":
+    n = int(sys.argv[1]) if len(sys.argv) > 1 else 10  # Размер графа (по умолчанию 10)
+    num_processes = int(sys.argv[2]) if len(sys.argv) > 2 else 1  # Количество процессов
+
+    graph = generate_graph(n)
+
+    if MPI.COMM_WORLD.Get_rank() == 0:
+        print("Граф:")
+        print(graph)
+
+    start_time = time.time()
+    result = floyd_warshall_parallel(graph)
+    end_time = time.time()
+
+    if MPI.COMM_WORLD.Get_rank() == 0:
+        print("Кратчайшие расстояния:")
+        print(result)
+        print(f"Время выполнения: {end_time - start_time:.2f} секунд")
