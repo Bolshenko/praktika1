@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: floyd-warshall-parallel
+spec:
+  parallelism: 10
+  template:
+    spec:
+      containers:
+      - name: floyd
+        image: floyd-warshall:latest
+        command: ["mpiexec", "-n", "10", "python", "floyd_warshall.py", "100"]
+      restartPolicy: Never
+  backoffLimit: 1
