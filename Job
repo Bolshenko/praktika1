@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: floyd-warshall-single
+spec:
+  template:
+    spec:
+      containers:
+      - name: floyd
+        image: floyd-warshall:latest
+        command: ["mpiexec", "-n", "1", "python", "floyd_warshall.py", "100"]
+      restartPolicy: Never
+  backoffLimit: 1
