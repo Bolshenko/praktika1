@@ -1,0 +1,46 @@
+import socket
+import numpy as np
+import random
+import pickle
+
+# Константы
+NUM_VERTICES = 20
+SERVER_1_ADDRESS = ('floyd-service1', 5001)
+SERVER_2_ADDRESS = ('floyd-service2', 5002)
+
+
+def generate_graph(num_vertices):
+    # Генерация случайной матрицы смежности
+    graph = np.random.randint(1, 10, size=(num_vertices, num_vertices))
+    np.fill_diagonal(graph, 0)  # Делаем диагональ нулевой
+    return graph
+
+
+def send_graph_to_server(graph, server_address):
+    # Отправка графа серверу
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect(server_address)
+        s.sendall(pickle.dumps(graph))
+        # Получение результата от сервера
+        result = s.recv(4096)
+    return pickle.loads(result)
+
+
+def gather_results(graph):
+    # Отправка и получение результатов от серверов
+    result_1 = send_graph_to_server(graph, SERVER_1_ADDRESS)
+    result_2 = send_graph_to_server(graph, SERVER_2_ADDRESS)
+
+    # Объединяем результаты
+    final_result = np.minimum(result_1, result_2)
+    return final_result
+
+
+if __name__ == "__main__":
+    graph = generate_graph(NUM_VERTICES)
+    print("Сгенерированная матрица графа:")
+    print(graph)
+
+    result = gather_results(graph)
+    print("Отработанная матрица:")
+    print(result)
