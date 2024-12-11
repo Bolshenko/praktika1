@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: floyd-service2
+spec:
+  selector:
+    app: floyd-server2 
+  ports:
+    - protocol: TCP
+      port: 5002
+      targetPort: 5002
