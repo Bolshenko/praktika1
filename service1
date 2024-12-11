@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: shell-floyd-service1
+  name: floyd-service1
 spec:
   selector:
-    app: shell-floyd-server1
+    app: floyd-server1
   ports:
     - protocol: TCP
       port: 5001
