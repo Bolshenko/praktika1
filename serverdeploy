@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: floyd-server1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: floyd-server1
+  template:
+    metadata:
+      labels:
+        app: floyd-server1
+    spec:
+      containers:
+      - name: shell-sort
+        image: vokurves/server1:latest
+        ports:
+        - containerPort: 5001
