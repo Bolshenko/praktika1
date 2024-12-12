@@ -1,0 +1,45 @@
+import socket
+import numpy as np
+import pickle
+
+
+def floyd_warshall(graph):
+    num_vertices = len(graph)
+    dist = np.copy(graph)
+    predecessors = np.full((num_vertices, num_vertices), -1)
+
+    for i in range(num_vertices):
+        for j in range(num_vertices):
+            if i != j and graph[i][j] < np.inf:
+                predecessors[i][j] = i  # Устанавливаем предшественники
+
+    for k in range(num_vertices):
+        for i in range(num_vertices):
+            for j in range(num_vertices):
+                if dist[i][j] > dist[i][k] + dist[k][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+                    predecessors[i][j] = predecessors[k][j]  # Обновляем предшественников
+
+    return dist, predecessors
+
+
+def start_server(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('0.0.0.0', port))
+        s.listen()
+        print(f"Сервер запущен на порту {port}. Ожидание соединения...")
+
+        while True:
+            conn, addr = s.accept()
+            with conn:
+                print(f"Подключено к {addr}")
+                data = conn.recv(4096)
+                if not data:
+                    break
+                graph = pickle.loads(data)
+                result = floyd_warshall(graph)
+                conn.sendall(pickle.dumps(result))
+
+
+if __name__ == "__main__":
+    start_server(5002)  
